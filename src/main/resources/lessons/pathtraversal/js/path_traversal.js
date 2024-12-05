@@ -51,7 +51,7 @@ webgoat.customjs.profileUploadRemoveUserInput = function () {
     formData.append("uploadedFileRemoveUserInput", picture);
     formData.append("fullName", $("#fullNameRemoveUserInput").val());
     formData.append("email", $("#emailRemoveUserInput").val());
-    formData.append("password", $("#passwordRemoveUserInput").val());
+    formData.append("password", sanitizeContent($("#passwordRemoveUserInput").val()));
     return formData;
 }
 
