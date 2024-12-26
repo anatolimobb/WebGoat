@@ -217,7 +217,7 @@
 			if (this.touchCapable) {
 				// Touch: Bind touch events:
 				$(document).on({
-					touchmove: $.proxy(this.mousemove, this),
+					touchmove: (this.mousemove).bind(this),
 					touchend: $.proxy(this.mouseup, this)
 				});
 			} else {
