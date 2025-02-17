@@ -22,6 +22,7 @@
 
 package org.owasp.webgoat.lessons.sqlinjection.introduction;
 
+import java.sql.PreparedStatement;
 import static org.hsqldb.jdbc.JDBCResultSet.CONCUR_UPDATABLE;
 import static org.hsqldb.jdbc.JDBCResultSet.TYPE_SCROLL_SENSITIVE;
 
@@ -66,14 +67,13 @@ public class SqlInjectionLesson9 extends AssignmentEndpoint {
     String query =
         "SELECT * FROM employees WHERE last_name = '"
             + name
-            + "' AND auth_tan = '"
-            + auth_tan
-            + "'";
+            + "' AND auth_tan = ?";
     try (Connection connection = dataSource.getConnection()) {
       try {
-        Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+        PreparedStatement statement = connection.prepareStatement(query, TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
         SqlInjectionLesson8.log(connection, query);
-        ResultSet results = statement.executeQuery(query);
+        statement.setString(1, auth_tan);
+        ResultSet results = statement.executeQuery();
         var test = results.getRow() != 0;
         if (results.getStatement() != null) {
           if (results.first()) {
