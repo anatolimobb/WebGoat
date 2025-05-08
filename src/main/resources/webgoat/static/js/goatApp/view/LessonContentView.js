@@ -175,14 +175,14 @@ define(['jquery',
 
             renderFeedback: function (feedback) {
                 var s = this.removeSlashesFromJSON(feedback);
-                this.$curFeedback.html(DOMPurify.sanitize(polyglot.t(s) || ""));
+                this.$curFeedback.html(DOMPurify.sanitize(DOMPurify.sanitize(polyglot.t(s) || "")));
                 this.$curFeedback.show(400)
 
             },
 
             renderOutput: function (output) {
                 var s = this.removeSlashesFromJSON(output);
-                this.$curOutput.html(polyglot.t(s) || "");
+                this.$curOutput.html(DOMPurify.sanitize(polyglot.t(s) || ""));
                 this.$curOutput.show(400)
             },
 
