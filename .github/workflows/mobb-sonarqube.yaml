@@ -1,0 +1,71 @@
+# Mobb/Sonarqube Fixer on pull requests
+# This workflow defines the needed steps to run Sonarqube Code on every pull request and pass the results to Mobb Fixer.
+#
+# Secrets in use (add your missing ones):
+# SONAR_TOKEN - your Sonarqube user credentials (find how to get it here: https://docs.sonarsource.com/sonarqube/latest/user-guide/user-account/generating-and-using-tokens)
+# SONAR_PROJECT_KEY - your Sonarqube Analysis Parameters (https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters)
+# SONAR_ORGANIZATION - your Sonarqube Analysis Parameters (https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters)
+# MOBB_API_TOKEN - your mobb user credentials (autumatially set if you forked this repo via the Mobb app)
+# GITHUB_TOKEN - automatically set by GitHub
+
+name: "Mobb/Sonarqube"
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  scan-and-fix:
+    name: Scan with Sonarqube and fix with Mobb
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    permissions:
+      pull-requests: write
+      statuses: write
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Run Sonarqube SAST scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env: 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.java.skipUnchanged=false
+            -Dsonar.java.binaries=target/classes
+
+      - name: Run Mobb on the findings and get fixes
+        if: always()
+        uses: mobb-dev/action/review@v1.1
+        with:
+          report-file: cx_result.json
+          api-key: ${{ secrets.MOBB_API_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          scanner: sonarqube
+
+
+
