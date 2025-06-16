@@ -222,7 +222,7 @@
 				});
 			} else {
 				$(document).on({
-					mousemove: $.proxy(this.mousemove, this),
+					mousemove: (this.mousemove).bind(this),
 					mouseup: (this.mouseup).bind(this)
 				});
 			}
