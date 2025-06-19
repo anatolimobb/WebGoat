@@ -92,7 +92,7 @@ public class SpoofCookieAssignment extends AssignmentEndpoint {
     String authPassword = users.getOrDefault(lowerCasedUsername, "");
     if (!authPassword.isBlank() && authPassword.equals(password)) {
       String newCookieValue = EncDec.encode(lowerCasedUsername);
-      Cookie newCookie = new Cookie(COOKIE_NAME, newCookieValue);
+      Cookie newCookie = new Cookie(COOKIE_NAME, newCookieValue.replaceAll("[\r\n]", ""));
       newCookie.setPath("/WebGoat");
       newCookie.setSecure(true);
       response.addCookie(newCookie);
