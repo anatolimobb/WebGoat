@@ -11,7 +11,9 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpStatus;
-
+import java.io.IOException;
+import java.io.File;
+import java.net.URI;
 public abstract class IntegrationTest {
 
   private static String webGoatPort = System.getenv().getOrDefault("WEBGOAT_PORT", "8080");
@@ -244,8 +246,41 @@ public abstract class IntegrationTest {
             .response()
             .getBody()
             .asString();
+    ensurePathIsRelative(result);
+    ensurePathIsRelative(result);
     result = result.replace("%20", " ");
     return result;
+  }
+
+  private static void ensurePathIsRelative(String path) {
+    ensurePathIsRelative(new File(path));
+  }
+
+
+  private static void ensurePathIsRelative(URI uri) {
+    ensurePathIsRelative(new File(uri));
+  }
+
+
+  private static void ensurePathIsRelative(File file) {
+    // Based on https://stackoverflow.com/questions/2375903/whats-the-best-way-to-defend-against-a-path-traversal-attack/34658355#34658355
+    String canonicalPath;
+    String absolutePath;
+  
+    if (file.isAbsolute()) {
+      throw new RuntimeException("Potential directory traversal attempt - absolute path not allowed");
+    }
+  
+    try {
+      canonicalPath = file.getCanonicalPath();
+      absolutePath = file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException("Potential directory traversal attempt", e);
+    }
+  
+    if (!canonicalPath.startsWith(absolutePath) || !canonicalPath.equals(absolutePath)) {
+      throw new RuntimeException("Potential directory traversal attempt");
+    }
   }
 
   public String webGoatServerDirectory() {
