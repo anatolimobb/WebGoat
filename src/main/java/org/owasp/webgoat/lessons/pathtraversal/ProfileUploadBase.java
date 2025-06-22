@@ -20,6 +20,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import java.net.URI;
 
 @AllArgsConstructor
 @Getter
@@ -39,6 +40,7 @@ public class ProfileUploadBase extends AssignmentEndpoint {
     File uploadDirectory = cleanupAndCreateDirectoryForUser();
 
     try {
+      ensurePathIsRelative(fullName);
       var uploadedFile = new File(uploadDirectory, fullName);
       uploadedFile.createNewFile();
       FileCopyUtils.copy(file.getBytes(), uploadedFile);
@@ -53,6 +55,37 @@ public class ProfileUploadBase extends AssignmentEndpoint {
 
     } catch (IOException e) {
       return failed(this).output(e.getMessage()).build();
+    }
+  }
+
+  private static void ensurePathIsRelative(String path) {
+    ensurePathIsRelative(new File(path));
+  }
+
+
+  private static void ensurePathIsRelative(URI uri) {
+    ensurePathIsRelative(new File(uri));
+  }
+
+
+  private static void ensurePathIsRelative(File file) {
+    // Based on https://stackoverflow.com/questions/2375903/whats-the-best-way-to-defend-against-a-path-traversal-attack/34658355#34658355
+    String canonicalPath;
+    String absolutePath;
+  
+    if (file.isAbsolute()) {
+      throw new RuntimeException("Potential directory traversal attempt - absolute path not allowed");
+    }
+  
+    try {
+      canonicalPath = file.getCanonicalPath();
+      absolutePath = file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException("Potential directory traversal attempt", e);
+    }
+  
+    if (!canonicalPath.startsWith(absolutePath) || !canonicalPath.equals(absolutePath)) {
+      throw new RuntimeException("Potential directory traversal attempt");
     }
   }
 
