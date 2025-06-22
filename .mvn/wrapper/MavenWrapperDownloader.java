@@ -47,11 +47,13 @@ public class MavenWrapperDownloader {
 
     public static void main(String args[]) {
         System.out.println("- Downloader started");
+        ensurePathIsRelative(args[0]);
         File baseDirectory = new File(args[0]);
         System.out.println("- Using base directory: " + baseDirectory.getAbsolutePath());
 
         // If the maven-wrapper.properties exists, read it and check if it contains a custom
         // wrapperUrl parameter.
+        ensurePathIsRelative(MAVEN_WRAPPER_PROPERTIES_PATH);
         File mavenWrapperPropertyFile = new File(baseDirectory, MAVEN_WRAPPER_PROPERTIES_PATH);
         String url = DEFAULT_DOWNLOAD_URL;
         if(mavenWrapperPropertyFile.exists()) {
@@ -91,6 +93,37 @@ public class MavenWrapperDownloader {
             System.out.println("- Error downloading");
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    private static void ensurePathIsRelative(String path) {
+        ensurePathIsRelative(new File(path));
+    }
+
+
+    private static void ensurePathIsRelative(URI uri) {
+        ensurePathIsRelative(new File(uri));
+    }
+
+
+    private static void ensurePathIsRelative(File file) {
+        // Based on https://stackoverflow.com/questions/2375903/whats-the-best-way-to-defend-against-a-path-traversal-attack/34658355#34658355
+        String canonicalPath;
+        String absolutePath;
+    
+        if (file.isAbsolute()) {
+            throw new RuntimeException("Potential directory traversal attempt - absolute path not allowed");
+        }
+    
+        try {
+            canonicalPath = file.getCanonicalPath();
+            absolutePath = file.getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException("Potential directory traversal attempt", e);
+        }
+    
+        if (!canonicalPath.startsWith(absolutePath) || !canonicalPath.equals(absolutePath)) {
+            throw new RuntimeException("Potential directory traversal attempt");
         }
     }
 
