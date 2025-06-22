@@ -95,6 +95,7 @@ public class CSRFIntegrationTest extends IntegrationTest {
     // remove any left over html
     ensurePathIsRelative(webwolfFileDir);
     Path webWolfFilePath = Paths.get(webwolfFileDir);
+    ensurePathIsRelative(htmlName);
     if (webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)).toFile().exists()) {
       ensurePathIsRelative(htmlName);
       Files.delete(webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)));
