@@ -217,12 +217,12 @@
 			if (this.touchCapable) {
 				// Touch: Bind touch events:
 				$(document).on({
-					touchmove: $.proxy(this.mousemove, this),
+					touchmove: (this.mousemove).bind(this),
 					touchend: (this.mouseup).bind(this)
 				});
 			} else {
 				$(document).on({
-					mousemove: $.proxy(this.mousemove, this),
+					mousemove: (this.mousemove).bind(this),
 					mouseup: (this.mouseup).bind(this)
 				});
 			}
