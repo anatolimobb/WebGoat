@@ -132,7 +132,7 @@
 			});
 		} else {
 			this.picker.on({
-				mousedown: $.proxy(this.mousedown, this)
+				mousedown: (this.mousedown).bind(this)
 			});
 		}
 
