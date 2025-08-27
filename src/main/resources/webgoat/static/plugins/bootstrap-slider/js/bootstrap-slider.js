@@ -138,7 +138,7 @@
 
 		if (tooltip === 'show') {
 			this.picker.on({
-				mouseenter: $.proxy(this.showTooltip, this),
+				mouseenter: (this.showTooltip).bind(this),
 				mouseleave: $.proxy(this.hideTooltip, this)
 			});
 		} else {
@@ -222,7 +222,7 @@
 				});
 			} else {
 				$(document).on({
-					mousemove: $.proxy(this.mousemove, this),
+					mousemove: (this.mousemove).bind(this),
 					mouseup: (this.mouseup).bind(this)
 				});
 			}
