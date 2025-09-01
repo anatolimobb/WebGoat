@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.net.URI;
 
 @RestController
 @AssignmentHints({
@@ -63,7 +64,7 @@ public class ProfileZipSlip extends ProfileUploadBase {
     var currentImage = getProfilePictureAsBase64();
 
     try {
-      var uploadedZipFile = tmpZipDirectory.resolve(file.getOriginalFilename());
+      var uploadedZipFile = tmpZipDirectory.resolve(String.valueOf(file.getOriginalFilename()).replaceAll("([/\\\\:*?\"<>|])|(^\\s)|([.\\s]$)", "_").replaceAll("\0", ""));
       FileCopyUtils.copy(file.getBytes(), uploadedZipFile.toFile());
 
       ZipFile zip = new ZipFile(uploadedZipFile.toFile());
@@ -74,6 +75,7 @@ public class ProfileZipSlip extends ProfileUploadBase {
             break;
         counter++;
         ZipEntry e = entries.nextElement();
+        ensurePathIsRelative(e.getName());
         File f = new File(tmpZipDirectory.toFile(), e.getName());
         InputStream is = zip.getInputStream(e);
         Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -82,6 +84,37 @@ public class ProfileZipSlip extends ProfileUploadBase {
       return isSolved(currentImage, getProfilePictureAsBase64());
     } catch (IOException e) {
       return failed(this).output(e.getMessage()).build();
+    }
+  }
+
+  private static void ensurePathIsRelative(String path) {
+    ensurePathIsRelative(new File(path));
+  }
+
+
+  private static void ensurePathIsRelative(URI uri) {
+    ensurePathIsRelative(new File(uri));
+  }
+
+
+  private static void ensurePathIsRelative(File file) {
+    // Based on https://stackoverflow.com/questions/2375903/whats-the-best-way-to-defend-against-a-path-traversal-attack/34658355#34658355
+    String canonicalPath;
+    String absolutePath;
+  
+    if (file.isAbsolute()) {
+      throw new RuntimeException("Potential directory traversal attempt - absolute path not allowed");
+    }
+  
+    try {
+      canonicalPath = file.getCanonicalPath();
+      absolutePath = file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException("Potential directory traversal attempt", e);
+    }
+  
+    if (!canonicalPath.startsWith(absolutePath) || !canonicalPath.equals(absolutePath)) {
+      throw new RuntimeException("Potential directory traversal attempt");
     }
   }
 
