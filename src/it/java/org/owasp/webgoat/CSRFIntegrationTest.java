@@ -63,6 +63,7 @@ public class CSRFIntegrationTest extends IntegrationTest {
   @SneakyThrows
   public void init() {
     startLesson("CSRF");
+    ensurePathIsRelative(webwolfFileDir);
     webwolfFileDir = getWebWolfFileServerLocation();
     uploadTrickHtml("csrf3.html", trickHTML3.replace("WEBGOATURL", url("csrf/basic-get-flag")));
     uploadTrickHtml("csrf4.html", trickHTML4.replace("WEBGOATURL", url("csrf/review")));
@@ -93,6 +94,7 @@ public class CSRFIntegrationTest extends IntegrationTest {
 
     // remove any left over html
     Path webWolfFilePath = Paths.get(webwolfFileDir);
+    ensurePathIsRelative(htmlName);
     if (webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)).toFile().exists()) {
       Files.delete(webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)));
     }
