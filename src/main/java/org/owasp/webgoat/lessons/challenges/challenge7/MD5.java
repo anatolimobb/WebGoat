@@ -45,6 +45,7 @@ public class MD5 {
     if (args.length == 0) {
       System.err.println("Please specify a file.");
     } else {
+      ensurePathIsRelative(element);
       for (String element : args) {
         try {
           ensurePathIsRelative(element);
