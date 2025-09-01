@@ -20,7 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.owasp.webgoat.container.lessons.Assignment;
-
+import java.io.File;
+import java.net.URI;
 public class CSRFIntegrationTest extends IntegrationTest {
 
   private static final String trickHTML3 =
@@ -93,6 +94,7 @@ public class CSRFIntegrationTest extends IntegrationTest {
 
     // remove any left over html
     Path webWolfFilePath = Paths.get(webwolfFileDir);
+    ensurePathIsRelative(htmlName);
     if (webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)).toFile().exists()) {
       Files.delete(webWolfFilePath.resolve(Paths.get(this.getUser(), htmlName)));
     }
@@ -109,6 +111,37 @@ public class CSRFIntegrationTest extends IntegrationTest {
         .response()
         .getBody()
         .asString();
+  }
+
+  private static void ensurePathIsRelative(String path) {
+    ensurePathIsRelative(new File(path));
+  }
+
+
+  private static void ensurePathIsRelative(URI uri) {
+    ensurePathIsRelative(new File(uri));
+  }
+
+
+  private static void ensurePathIsRelative(File file) {
+    // Based on https://stackoverflow.com/questions/2375903/whats-the-best-way-to-defend-against-a-path-traversal-attack/34658355#34658355
+    String canonicalPath;
+    String absolutePath;
+  
+    if (file.isAbsolute()) {
+      throw new RuntimeException("Potential directory traversal attempt - absolute path not allowed");
+    }
+  
+    try {
+      canonicalPath = file.getCanonicalPath();
+      absolutePath = file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException("Potential directory traversal attempt", e);
+    }
+  
+    if (!canonicalPath.startsWith(absolutePath) || !canonicalPath.equals(absolutePath)) {
+      throw new RuntimeException("Potential directory traversal attempt");
+    }
   }
 
   private String callTrickHtml(String htmlName) {
