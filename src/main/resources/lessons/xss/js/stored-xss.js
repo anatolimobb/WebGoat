@@ -1,3 +1,16 @@
+
+function sanitizeContent(content) {
+    if (typeof content === 'string') {
+        return DOMPurify.sanitize(content);
+    } else if (window?.jQuery && content instanceof window.jQuery) {
+        var originalHtml = content.prop('outerHTML');
+        var sanitizedHtml = DOMPurify.sanitize(originalHtml);
+        if (sanitizedHtml !== originalHtml) {
+            throw new Error("The content contains potentially unsafe HTML.");
+        }
+    }
+    return content;
+}
 $(document).ready(function () {
     $("#postComment").on("click", function () {
         var commentInput = $("#commentInput").val();
@@ -37,7 +50,7 @@ $(document).ready(function () {
                 var comment = html.replace('USER', result[i].user);
                 comment = comment.replace('DATETIME', result[i].dateTime);
                 comment = comment.replace('COMMENT', result[i].text);
-                $("#list").append(comment);
+                $("#list").append(sanitizeContent(comment));
             }
 
         });
