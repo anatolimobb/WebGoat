@@ -74,10 +74,10 @@ public class SqlInjectionLesson5 extends AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(
+      try (java.sql.PreparedStatement statement =
+          connection.prepareStatement(query,
               ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-        statement.executeQuery(query);
+        statement.executeQuery();
         if (checkSolution(connection)) {
           return success(this).build();
         }
