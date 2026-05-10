@@ -14971,7 +14971,7 @@ $.widget( "ui.tooltip", {
 
 	_find: function( target ) {
 		var id = target.data( "ui-tooltip-id" );
-		return id ? $( "#" + id ) : $();
+		return id ? $( "#" + DOMPurify.sanitize(id) ) : $();
 	},
 
 	_removeTooltip: function( tooltip ) {
