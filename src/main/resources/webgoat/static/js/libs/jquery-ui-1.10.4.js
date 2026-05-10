@@ -15009,7 +15009,7 @@ $.widget( "ui.tooltip", {
 
 			// Remove immediately; destroying an open tooltip doesn't use the
 			// hide animation
-			$( "#" + id ).remove();
+			$( "#" + DOMPurify.sanitize(id) ).remove();
 
 			// Restore the title
 			if ( element.data( "ui-tooltip-title" ) ) {
