@@ -112,7 +112,7 @@ define(['jquery',
 				$('#'+this.curLessonLinkId).removeClass('selected').parent().removeClass('selected');
 			}
 			//update
-			$('#'+elementId).addClass('selected').parent().addClass('selected');
+			$("html").find('#'+elementId).addClass('selected').parent().addClass('selected');
 			this.curLessonLinkId = elementId;
 		},
 
