@@ -8,6 +8,7 @@
  * Licensed under the MIT license (MIT)
  *
  */
+const DOMPurify = require('dompurify');
 var wysihtml5 = {
   version: "0.3.0",
 
@@ -1203,7 +1204,7 @@ rangy.createModule("DomUtil", function(api, module) {
             assertNotDetached(this);
             var doc = getRangeDocument(this);
             var el = doc.createElement("body");
-            el.innerHTML = fragmentStr;
+            el.innerHTML = DOMPurify.sanitize(fragmentStr);
 
             return dom.fragmentFromNodeChildren(el);
         };
