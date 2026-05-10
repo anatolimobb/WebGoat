@@ -1,3 +1,4 @@
+var DOMPurify = require('dompurify');
 var jQuery = require('jqueryvuln');
 
 /*! jQuery UI - v1.10.3 - 2013-05-03
@@ -9611,7 +9612,7 @@ $.fn.datepicker = function(options){
 	}
 
 	/* Append datepicker main container to body if not exist. */
-	if ($("#"+$.datepicker._mainDivId).length === 0) {
+	if ($("#"+DOMPurify.sanitize($.datepicker._mainDivId)).length === 0) {
 		$("body").append($.datepicker.dpDiv);
 	}
 
