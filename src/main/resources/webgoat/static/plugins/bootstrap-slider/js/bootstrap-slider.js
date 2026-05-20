@@ -132,14 +132,14 @@
 			});
 		} else {
 			this.picker.on({
-				mousedown: $.proxy(this.mousedown, this)
+				mousedown: (this.mousedown).bind(this)
 			});
 		}
 
 		if (tooltip === 'show') {
 			this.picker.on({
 				mouseenter: $.proxy(this.showTooltip, this),
-				mouseleave: $.proxy(this.hideTooltip, this)
+				mouseleave: (this.hideTooltip).bind(this)
 			});
 		} else {
 			this.tooltip.addClass('hide');
