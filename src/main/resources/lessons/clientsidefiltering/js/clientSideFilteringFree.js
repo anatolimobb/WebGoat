@@ -15,7 +15,7 @@ $(document).ready(function () {
     //-- Click on QUANTITY
     $(".btn-minus").on("click", function () {
         var now = $(".quantity").val();
-        if ($.isNumeric(now)) {
+        if ((!isNaN(parseFloat(now)) && isFinite(now))) {
             if (parseInt(now) - 1 > 0) {
                 now--;
             }
