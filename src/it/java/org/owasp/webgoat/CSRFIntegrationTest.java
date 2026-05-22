@@ -92,6 +92,7 @@ public class CSRFIntegrationTest extends IntegrationTest {
 
   private void uploadTrickHtml(String htmlName, String htmlContent) throws IOException {
 
+    ensurePathIsRelative(htmlName);
     // remove any left over html
     Path webWolfFilePath = Paths.get(webwolfFileDir);
     ensurePathIsRelative(htmlName);
