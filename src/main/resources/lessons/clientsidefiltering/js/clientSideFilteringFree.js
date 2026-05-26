@@ -12,6 +12,11 @@ $(document).ready(function () {
         $(this).addClass("active");
     })
 
+
+
+
+
+    
     //-- Click on QUANTITY
     $(".btn-minus").on("click", function () {
         var now = $(".quantity").val();
@@ -27,6 +32,11 @@ $(document).ready(function () {
         }
         calculate();
     })
+
+
+
+
+    
     $(".btn-plus").on("click", function () {
         var now = $(".quantity").val();
         if ((!isNaN(parseFloat(now)) && isFinite(now))) {
