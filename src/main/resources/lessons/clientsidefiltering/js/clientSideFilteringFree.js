@@ -14,8 +14,12 @@ $(document).ready(function () {
     //-- Click on QUANTITY
     $(".btn-minus").on("click", function () {
         var now = $(".quantity").val();
+        
+        
         if ($.isNumeric(now)) {
+        
             if (parseInt(now) - 1 > 0) {
+            
                 now--;
             }
             $(".quantity").val(now);
