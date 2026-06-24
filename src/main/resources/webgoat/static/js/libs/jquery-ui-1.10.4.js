@@ -1,5 +1,23 @@
+var DOMPurify = require('dompurify');
 var jQuery = require('jqueryvuln');
 
+
+function sanitizeContent(content) {
+	if (typeof content === 'string') {
+		return DOMPurify.sanitize(content);
+	}
+	if (content == null) {
+		return content;
+	}
+	if (Object.getPrototypeOf(content).constructor.name === 'jQuery') {
+		var originalHtml = content.html();
+		var sanitizedHtml = DOMPurify.sanitize(originalHtml);
+		if (sanitizedHtml !== originalHtml) {
+			throw new Error("The content contains potentially unsafe HTML.");
+		}
+	}
+	return content;
+}
 /*! jQuery UI - v1.10.3 - 2013-05-03
 * http://jqueryui.com
 * Includes: jquery.ui.core.js, jquery.ui.widget.js, jquery.ui.mouse.js, jquery.ui.draggable.js, jquery.ui.droppable.js, jquery.ui.resizable.js, jquery.ui.selectable.js, jquery.ui.sortable.js, jquery.ui.effect.js, jquery.ui.accordion.js, jquery.ui.autocomplete.js, jquery.ui.button.js, jquery.ui.datepicker.js, jquery.ui.dialog.js, jquery.ui.effect-blind.js, jquery.ui.effect-bounce.js, jquery.ui.effect-clip.js, jquery.ui.effect-drop.js, jquery.ui.effect-explode.js, jquery.ui.effect-fade.js, jquery.ui.effect-fold.js, jquery.ui.effect-highlight.js, jquery.ui.effect-pulsate.js, jquery.ui.effect-scale.js, jquery.ui.effect-shake.js, jquery.ui.effect-slide.js, jquery.ui.effect-transfer.js, jquery.ui.menu.js, jquery.ui.position.js, jquery.ui.progressbar.js, jquery.ui.slider.js, jquery.ui.spinner.js, jquery.ui.tabs.js, jquery.ui.tooltip.js
@@ -7795,7 +7813,7 @@ $.extend(Datepicker.prototype, {
 			inst.append.remove();
 		}
 		if (appendText) {
-			inst.append = $("<span class='" + this._appendClass + "'>" + appendText + "</span>");
+			inst.append = $("<span class='" + this._appendClass + "'>" + DOMPurify.sanitize(appendText) + "</span>");
 			input[isRTL ? "before" : "after"](inst.append);
 		}
 
@@ -7816,8 +7834,8 @@ $.extend(Datepicker.prototype, {
 				$("<img/>").addClass(this._triggerClass).
 					attr({ src: buttonImage, alt: buttonText, title: buttonText }) :
 				$("<button type='button'></button>").addClass(this._triggerClass).
-					html(!buttonImage ? buttonText : $("<img/>").attr(
-					{ src:buttonImage, alt:buttonText, title:buttonText })));
+					html(sanitizeContent(!buttonImage ? buttonText : $("<img/>").attr(
+					{ src:buttonImage, alt:buttonText, title:buttonText }))));
 			input[isRTL ? "before" : "after"](inst.trigger);
 			inst.trigger.click(function() {
 				if ($.datepicker._datepickerShowing && $.datepicker._lastInput === input[0]) {
@@ -8345,7 +8363,7 @@ $.extend(Datepicker.prototype, {
 		if (!inst.inline) {
 			showAnim = $.datepicker._get(inst, "showAnim");
 			duration = $.datepicker._get(inst, "duration");
-			inst.dpDiv.zIndex($(input).zIndex()+1);
+			inst.dpDiv.zIndex(DOMPurify.sanitize($(input).zIndex())+1);
 			$.datepicker._datepickerShowing = true;
 
 			if ( $.effects && $.effects.effect[ showAnim ] ) {
@@ -9611,7 +9629,7 @@ $.fn.datepicker = function(options){
 	}
 
 	/* Append datepicker main container to body if not exist. */
-	if ($("#"+$.datepicker._mainDivId).length === 0) {
+	if ($("#"+DOMPurify.sanitize($.datepicker._mainDivId)).length === 0) {
 		$("body").append($.datepicker.dpDiv);
 	}
 
@@ -14991,7 +15009,7 @@ $.widget( "ui.tooltip", {
 
 			// Remove immediately; destroying an open tooltip doesn't use the
 			// hide animation
-			$( "#" + id ).remove();
+			$( "#" + DOMPurify.sanitize(id) ).remove();
 
 			// Restore the title
 			if ( element.data( "ui-tooltip-title" ) ) {

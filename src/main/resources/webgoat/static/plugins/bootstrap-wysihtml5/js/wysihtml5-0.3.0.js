@@ -8,6 +8,7 @@
  * Licensed under the MIT license (MIT)
  *
  */
+const DOMPurify = require('dompurify');
 var wysihtml5 = {
   version: "0.3.0",
 
@@ -1203,7 +1204,7 @@ rangy.createModule("DomUtil", function(api, module) {
             assertNotDetached(this);
             var doc = getRangeDocument(this);
             var el = doc.createElement("body");
-            el.innerHTML = fragmentStr;
+            el.innerHTML = DOMPurify.sanitize(fragmentStr);
 
             return dom.fragmentFromNodeChildren(el);
         };
@@ -4009,7 +4010,7 @@ wysihtml5.browser = (function() {
 
     // We need to insert an empty/temporary <span /> to fix IE quirks
     // Elsewise IE would strip white space in the beginning
-    tempElement.innerHTML = "<span></span>" + _convertUrlsToLinks(textNode.data);
+    tempElement.innerHTML = DOMPurify.sanitize("<span></span>" + _convertUrlsToLinks(textNode.data));
     tempElement.removeChild(tempElement.firstChild);
 
     while (tempElement.firstChild) {
