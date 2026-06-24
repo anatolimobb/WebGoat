@@ -43,9 +43,9 @@ define(['jquery',
                 },
 
                 displayButton: function(id, show) {
-                    if ($('#' + id)) {
+                    if ($("html").find('#' + id)) {
                         if (show) {
-                            $('#' + id).show();
+                            $("html").find('#' + id).show();
                         } else {
 
                         }
@@ -81,7 +81,7 @@ define(['jquery',
                     $('ul li.selected').removeClass(goatConstants.selectedMenuClass)
                     $('ul li.selected a.selected').removeClass(goatConstants.selectedMenuClass)
                     $('#' + id).addClass(goatConstants.selectedMenuClass);
-                    $('#' + id).parent().addClass(goatConstants.selectedMenuClass);
+                    $("html").find('#' + id).parent().addClass(goatConstants.selectedMenuClass);
                 },
 
         };

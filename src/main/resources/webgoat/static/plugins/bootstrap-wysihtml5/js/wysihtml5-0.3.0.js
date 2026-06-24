@@ -4389,7 +4389,7 @@ wysihtml5.dom.getAsDom = (function() {
       tempElement.appendChild(html);
     } else if (wysihtml5.browser.supportsHTML5Tags(context)) {
       tempElement = context.createElement("div");
-      tempElement.innerHTML = html;
+      tempElement.innerHTML = DOMPurify.sanitize(html);
     } else {
       _ensureHTML5Compatibility(context);
       tempElement = _innerHTMLShiv(html, context);
