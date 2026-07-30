@@ -1,3 +1,4 @@
+const DOMPurify = require('dompurify');
 var dataFetched = false;
 
 function selectUser() {
@@ -29,7 +30,7 @@ function ajaxFunction(userId) {
             html = html + '<td>' + result[i].FirstName + '</td>';
             html = html + '<td>' + result[i].LastName + '</td>';
             html = html + '<td>' + result[i].SSN + '</td>';
-            html = html + '<td>' + result[i].Salary + '</td>';
+            html = html + '<td>' + DOMPurify.sanitize(result[i].Salary) + '</td>';
             html = html + '</tr>';
         }
         html = html + '</tr></table>';
