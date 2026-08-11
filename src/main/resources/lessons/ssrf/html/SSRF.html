@@ -13,6 +13,7 @@
             <form class="attack-form" accept-charset="UNKNOWN"
                   method="POST" name="form"
                   action="SSRF/task1">
+                {% csrf_token %}
                 <table>
                     <tr>
                         <td><input type="hidden" id="url1" name="url" value="images/tom.png"/></td>
