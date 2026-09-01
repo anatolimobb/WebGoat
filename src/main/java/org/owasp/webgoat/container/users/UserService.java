@@ -49,7 +49,10 @@ public class UserService implements UserDetailsService {
   }
 
   private void createLessonsForUser(WebGoatUser webGoatUser) {
-    jdbcTemplate.execute("CREATE SCHEMA \"" + webGoatUser.getUsername() + "\" authorization dba");
+    jdbcTemplate.execute((java.sql.Statement stmt) -> {
+      String quotedUsername = stmt.enquoteIdentifier(webGoatUser.getUsername(), false);
+      return stmt.execute("CREATE SCHEMA " + quotedUsername + " authorization dba");
+    });
     flywayLessons.apply(webGoatUser.getUsername()).migrate();
   }
 
