@@ -20,6 +20,8 @@
  * Source for this application is maintained at https://github.com/WebGoat/WebGoat, a repository for free software projects.
  */
 
+// test 2 - 3th update in custom
+
 package org.owasp.webgoat.lessons.sqlinjection.introduction;
 
 import static java.sql.ResultSet.CONCUR_READ_ONLY;
